@@ -7,7 +7,8 @@ ENV VNC_PASSWORD=${VNC_PASSWORD} \
 RUN apt-get update; apt-get install -y \
             libgl1-mesa-glx libgl1-mesa-dri mesa-utils \
             dbus-x11 x11-utils x11vnc xvfb supervisor \
-            dwm suckless-tools dmenu stterm; \
+            dwm suckless-tools dmenu stterm \
+            python-catkin-tools; \
     rosdep init; rosdep update; \
     adduser --system --home /home/gopher --shell /bin/bash --group --disabled-password gopher; \
     usermod -a -G www-data gopher; \
@@ -32,8 +33,8 @@ RUN echo "source /opt/ros/kinetic/setup.bash" >> /home/gopher/.bashrc; \
     curl -L -O https://raw.githubusercontent.com/ethz-asl/rotors_simulator/master/rotors_hil.rosinstall; \
     wstool merge rotors_hil.rosinstall; \
     wstool update; \
-    cd ~/catkin_ws; \
-    catkin build;
+    cd ~/catkin_ws; 
+####    catkin build;
 
 
 CMD ["/usr/bin/supervisord","-c","/etc/supervisor/conf.d/supervisord.conf"]
