@@ -29,7 +29,11 @@ RUN echo "source /opt/ros/kinetic/setup.bash" >> /home/gopher/.bashrc; \
     cd ~/catkin_ws/src; \
     catkin_init_workspace; \
     wstool init; \
-    curl -L -O https://raw.githubusercontent.com/ethz-asl/rotors_simulator/master/rotors_hil.rosinstall
+    curl -L -O https://raw.githubusercontent.com/ethz-asl/rotors_simulator/master/rotors_hil.rosinstall; \
+    wstool merge rotors_hil.rosinstall; \
+    wstool update; \
+    cd ~/catkin_ws; 
+####    catkin build;
 
 
 CMD ["/usr/bin/supervisord","-c","/etc/supervisor/conf.d/supervisord.conf"]
