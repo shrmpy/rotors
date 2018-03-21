@@ -4,11 +4,13 @@ ARG VNC_PASSWORD=secret
 ENV VNC_PASSWORD=${VNC_PASSWORD} \
     DEBIAN_FRONTEND=noninteractive
 
+RUN sh -c 'echo "deb http://packages.ros.org/ros/ubuntu `lsb_release -sc` main" > /etc/apt/sources.list.d/ros-latest.list'; \
+    curl -Ls http://packages.ros.org/ros.key --output - | apt-key add -
 RUN apt-get update; apt-get install -y \
             libgl1-mesa-glx libgl1-mesa-dri mesa-utils \
             dbus-x11 x11-utils x11vnc xvfb supervisor \
             dwm suckless-tools dmenu stterm \
-            python-catkin-tools; \
+            ros-kinetic-joy ros-kinetic-octomap-ros ros-kinetic-mavlink python-catkin-tools protobuf-compiler libgoogle-glog-dev ros-kinetic-control-toolbox; \
     rosdep init; rosdep update; \
     adduser --system --home /home/gopher --shell /bin/bash --group --disabled-password gopher; \
     usermod -a -G www-data gopher; \
@@ -30,7 +32,7 @@ RUN echo "source /opt/ros/kinetic/setup.bash" >> /home/gopher/.bashrc; \
     cd ~/catkin_ws/src; \
     catkin_init_workspace; \
     wstool init; \
-    curl -L -O https://raw.githubusercontent.com/ethz-asl/rotors_simulator/master/rotors_hil.rosinstall; \
+    curl -LO https://raw.githubusercontent.com/ethz-asl/rotors_simulator/master/rotors_hil.rosinstall; \
     wstool merge rotors_hil.rosinstall; \
     wstool update; \
     cd ~/catkin_ws; 
