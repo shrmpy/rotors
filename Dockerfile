@@ -2,8 +2,8 @@ FROM osrf/ros:lunar-desktop-full-xenial
 
 ARG VNC_PASSWORD=secret
 ENV VNC_PASSWORD=${VNC_PASSWORD} \
-    LOGIN=gopher \
-    HOME=/home/gopher \
+    LOGIN=rotors \
+    HOME=/home/rotors \
     DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update; apt-get install -y \
@@ -35,12 +35,12 @@ RUN mkdir -p ${HOME}/catkin_ws/src; \
     . /opt/ros/lunar/setup.sh; \
     rosdep update; \
     wstool init; \
-    curl -LO https://raw.githubusercontent.com/ethz-asl/rotors_simulator/master/rotors_hil.rosinstall; \
+    curl -sLO https://raw.githubusercontent.com/ethz-asl/rotors_simulator/master/rotors_hil.rosinstall; \
     wstool merge rotors_hil.rosinstall; \
     wstool update; \
     cd ${HOME}/catkin_ws; \
     catkin_make_isolated; \
-    . ${HOME}/catkin_ws/devel/setup.sh; \
-    echo ". ${HOME}/catkin_ws/devel/setup.sh" >> ${HOME}/.bashrc; 
+    . ${HOME}/catkin_ws/devel/setup.sh; 
+##    echo ". ${HOME}/catkin_ws/devel/setup.sh" >> ${HOME}/.bashrc; 
 
-##$ roslaunch rotors_gazebo mav_hovering_example.launch mav_name:=firefly world_name:=basic
+####$ roslaunch rotors_gazebo mav_hovering_example.launch mav_name:=firefly world_name:=basic
