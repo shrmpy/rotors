@@ -1,19 +1,20 @@
-FROM osrf/ros:kinetic-desktop-full-xenial
+FROM osrf/ros:lunar-desktop-full-xenial
 
 ARG VNC_PASSWORD=secret
 ENV VNC_PASSWORD=${VNC_PASSWORD} \
+    LOGIN=gopher \
+    HOME=/home/gopher \
     DEBIAN_FRONTEND=noninteractive
 
-RUN sh -c 'echo "deb http://packages.ros.org/ros/ubuntu `lsb_release -sc` main" > /etc/apt/sources.list.d/ros-latest.list'; \
-    curl -Ls http://packages.ros.org/ros.key --output - | apt-key add -
 RUN apt-get update; apt-get install -y \
             libgl1-mesa-glx libgl1-mesa-dri mesa-utils \
             dbus-x11 x11-utils x11vnc xvfb supervisor \
-            dwm suckless-tools dmenu stterm \
-            ros-kinetic-joy ros-kinetic-octomap-ros ros-kinetic-mavlink python-catkin-tools protobuf-compiler libgoogle-glog-dev ros-kinetic-control-toolbox; \
-    rosdep init; rosdep update; \
-    adduser --system --home /home/gopher --shell /bin/bash --group --disabled-password gopher; \
-    usermod -a -G www-data gopher; \
+            dwm suckless-tools stterm \
+            ros-lunar-joy ros-lunar-octomap-ros ros-lunar-mavlink protobuf-compiler libgoogle-glog-dev ros-lunar-control-toolbox \
+            python-pip python-setuptools; \
+    pip2 install future; \
+    adduser --system --home ${HOME} --shell /bin/bash --group --disabled-password $LOGIN; \
+    usermod -a -G www-data $LOGIN; \
     mkdir -p /etc/supervisor/conf.d; \
     x11vnc -storepasswd $VNC_PASSWORD /etc/vncsecret; \
     chmod 444 /etc/vncsecret; \
@@ -23,21 +24,23 @@ RUN apt-get update; apt-get install -y \
 
 COPY supervisord.conf /etc/supervisor/conf.d
 EXPOSE 5900
+CMD ["/usr/bin/supervisord","-c","/etc/supervisor/conf.d/supervisord.conf"]
 
-USER gopher
-WORKDIR /home/gopher
-RUN echo "source /opt/ros/kinetic/setup.bash" >> /home/gopher/.bashrc; \
-    echo "source ~/catkin_ws/devel/setup.bash" >> /home/gopher/.bashrc; \
-    mkdir -p ~/catkin_ws/src; \
-    cd ~/catkin_ws/src; \
-    catkin_init_workspace; \
+USER $LOGIN
+WORKDIR ${HOME}
+
+# Build a workspace and include RotorS 
+RUN mkdir -p ${HOME}/catkin_ws/src; \
+    cd ${HOME}/catkin_ws/src; \
+    . /opt/ros/lunar/setup.sh; \
+    rosdep update; \
     wstool init; \
     curl -LO https://raw.githubusercontent.com/ethz-asl/rotors_simulator/master/rotors_hil.rosinstall; \
     wstool merge rotors_hil.rosinstall; \
     wstool update; \
-    cd ~/catkin_ws; 
-####    catkin build;
+    cd ${HOME}/catkin_ws; \
+    catkin_make_isolated; \
+    . ${HOME}/catkin_ws/devel/setup.sh; \
+    echo ". ${HOME}/catkin_ws/devel/setup.sh" >> ${HOME}/.bashrc; 
 
-
-CMD ["/usr/bin/supervisord","-c","/etc/supervisor/conf.d/supervisord.conf"]
-
+##$ roslaunch rotors_gazebo mav_hovering_example.launch mav_name:=firefly world_name:=basic
