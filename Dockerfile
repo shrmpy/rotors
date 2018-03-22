@@ -6,7 +6,7 @@ ENV VNC_PASSWORD=${VNC_PASSWORD} \
     DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update; apt-get install -y \
-            libgl1-mesa-glx mesa-utils \
+            mesa-utils \
             dbus-x11 x11vnc xvfb supervisor \
             dwm suckless-tools stterm \
             ros-lunar-joy ros-lunar-octomap-ros ros-lunar-mavlink protobuf-compiler libgoogle-glog-dev ros-lunar-control-toolbox \
@@ -35,8 +35,8 @@ RUN mkdir -p ${HOME}/catkin_ws/src; \
     wstool merge rotors_hil.rosinstall; \
     wstool update; \
     cd ${HOME}/catkin_ws; \
-    catkin_make_isolated; \
-    . ${HOME}/catkin_ws/devel/setup.sh; 
+    catkin_make_isolated; 
+##    . ${HOME}/catkin_ws/devel/setup.sh; 
 ##    echo ". ${HOME}/catkin_ws/devel/setup.sh" >> ${HOME}/.bashrc; 
 
 ####$ roslaunch rotors_gazebo mav_hovering_example.launch mav_name:=firefly world_name:=basic
