@@ -2,8 +2,8 @@ FROM osrf/ros:lunar-desktop-full-xenial
 
 ARG VNC_PASSWORD=secret
 ENV VNC_PASSWORD=${VNC_PASSWORD} \
-    LOGIN=rotors \
-    HOME=/home/rotors \
+    LOGIN=nanodrone7 \
+    HOME=/home/nanodrone7 \
     DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update; apt-get install -y \
@@ -11,7 +11,7 @@ RUN apt-get update; apt-get install -y \
             dbus-x11 x11-utils x11vnc xvfb supervisor \
             dwm suckless-tools stterm \
             ros-lunar-joy ros-lunar-octomap-ros ros-lunar-mavlink protobuf-compiler libgoogle-glog-dev ros-lunar-control-toolbox \
-            python-pip python-setuptools; \
+            python-pip; \
     pip2 install future; \
     adduser --system --home ${HOME} --shell /bin/bash --group --disabled-password $LOGIN; \
     usermod -a -G www-data $LOGIN; \
